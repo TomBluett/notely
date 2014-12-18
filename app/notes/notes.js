@@ -85,4 +85,10 @@ noteApp.controller('NotesController', function($scope, $http, NotesBackend) {
       NotesBackend.postNote($scope.note);
     }
   };
+
+  $scope.clearNote = function() {
+    $scope.note = {};
+    document.getElementById('note_title').focus();
+  };
+
 });
