@@ -30,6 +30,13 @@ noteApp.service('NotesBackend', function($http) {
       notes.unshift(noteData);
     });
   };
+  this.replaceNote = function(note) {
+  for(var i=0; i < notes.length; i++) {
+    if (notes[i].id === note.id) {
+      notes[i] = note;
+      }
+    }
+  };
 
   this.updateNote = function(note) {
     var self = this;
@@ -37,7 +44,8 @@ noteApp.service('NotesBackend', function($http) {
       api_key: apiKey,
       note: note,
     }).success(function(newNoteData) {
-      self.fetchNotes();
+      //self.fetchNotes();
+      self.replaceNote(newNoteData);
     })
   };
 
@@ -72,7 +80,7 @@ noteApp.controller('NotesController', function($scope, $http, NotesBackend) {
 
   $scope.commit = function() {
     if ($scope.note && $scope.note.id) {
-      NotesBackend.postNote($scope.note);
+      NotesBackend.updateNote($scope.note);
     } else {
       NotesBackend.postNote($scope.note);
     }
