@@ -1,37 +1,51 @@
 'use strict';
-
-angular.module('myApp.notes', ['ngRoute'])
-
-.config(['$routeProvider', function($routeProvider) {
+var noteApp = angular.module('myApp.notes', ['ngRoute']);
+noteApp.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/notes', {
     templateUrl: 'notes/notes.html',
     controller: 'NotesController'
   });
-}])
-
-.controller('NotesController', function($scope, $http) {
+}]);
+noteApp.service('NotesBackend', function($http) {
   var apiBasePath = 'https://elevennote-nov-2014.herokuapp.com/api/v1/';
   var postNotePath = apiBasePath + 'notes';
   var apiKey = '$2a$10$XZTSj0TmF.DuQKj2f.DS7O71tYlCA66g3qA2JJqPBPAyVy20WJCpi';
   var notes = [];
-
-  $http.get(apiBasePath + 'notes.json?api_key=' + apiKey).success(function(noteData){
-    $scope.notes = noteData;
-  });
-  $scope.commit = function() {
-    console.log('I am Committed!');
+  this.getNotes = function() {
+    return notes;
+  };
+  this.fetchNotes = function() {
+    $http.get(apiBasePath + 'notes.json?api_key=' + apiKey).success(function(noteData){
+      notes = noteData;
+    });
+  };
+  this.postNote = function(note) {
     $http.post(postNotePath, {
       api_key: apiKey,
       note: {
-        title: 'COOL TITLE',
-        body_html: 'LESS COOL BODY'
+        title: note.title,
+        body_html: note.body_html
       }
-    }).success(function(successData){
-      console.log('Success');
-      console.log('successData');
-    }).error(function(errorData){
-      console.log('Failure');
-      console.log(errorData);
+    }).success(function(noteData) {
+      notes.unshift(noteData);
     });
+  };
+});
+noteApp.controller('NotesController', function($scope, $http, NotesBackend) {
+  NotesBackend.fetchNotes();
+  $scope.notes = function() {
+    return NotesBackend.getNotes();
+
+  };
+
+  $scope.hasNotes = function() {
+    return this.notes().length > 0;
+  };
+
+  $scope.loadNote = function() {
+    
+  }
+  $scope.commit = function() {
+    NotesBackend.postNote($scope.note);
   };
 });
