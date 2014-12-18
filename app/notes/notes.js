@@ -9,7 +9,7 @@ noteApp.config(['$routeProvider', function($routeProvider) {
 noteApp.service('NotesBackend', function($http) {
   var apiBasePath = 'https://elevennote-nov-2014.herokuapp.com/api/v1/';
   var postNotePath = apiBasePath + 'notes';
-  var apiKey = '$2a$10$XZTSj0TmF.DuQKj2f.DS7O71tYlCA66g3qA2JJqPBPAyVy20WJCpi';
+  var apiKey = '$2a$10$6vYIy3xC6HPr8p2NdGygzujueCcIR/59jZtgbHTXmS9dJBxwr4bBy';
   var notes = [];
   this.getNotes = function() {
     return notes;
@@ -30,6 +30,17 @@ noteApp.service('NotesBackend', function($http) {
       notes.unshift(noteData);
     });
   };
+
+  this.updateNote = function(note) {
+    var self = this;
+    $http.put(apiBasePath + 'notes/' + note.id, {
+      api_key: apiKey,
+      note: note,
+    }).success(function(newNoteData) {
+      self.fetchNotes();
+    })
+  };
+
 });
 noteApp.controller('NotesController', function($scope, $http, NotesBackend) {
   NotesBackend.fetchNotes();
@@ -51,11 +62,19 @@ noteApp.controller('NotesController', function($scope, $http, NotesBackend) {
     }
   };
 
+  $scope.cloneNote = function(note) {
+    return JSON.parse(JSON.stringify(note));
+  };
+
   $scope.loadNote = function(noteId) {
-    $scope.note = this.findNote(noteId);
+    $scope.note = JSON.parse(JSON.stringify(this.findNote(noteId)));
   };
 
   $scope.commit = function() {
-    NotesBackend.postNote($scope.note);
+    if ($scope.note && $scope.note.id) {
+      NotesBackend.postNote($scope.note);
+    } else {
+      NotesBackend.postNote($scope.note);
+    }
   };
 });
