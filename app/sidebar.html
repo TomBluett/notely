@@ -1,12 +1,10 @@
 <nav id="sidebar">
-  <div class="well">
-    <button class="new-note btn btn-default" ng-click="clearNote()">New Note</button>
-    <h3 ng-show="hasNotes()">My Notes</h3>
-    <ul ng-show="hasNotes()">
-      <li id="note_{{ note.id }}" ng-click="loadNote(note.id)" ng-repeat="note in notes() | limitTo: 10">
-        <div class="note-title">{{ note.title }}</div>
-        <div class="note-body">{{ note.body_text }}</div>
-      </li>
-    </ul>
-  </div>
+  <button class="new-note btn btn-default" ng-click="clearNote()">New Note</button>
+  <h3 ng-show="hasNotes()">My Notes</h3>
+  <ul ng-show="hasNotes()" id="notes">
+    <li id="note_{{ note.id }}" ng-click="loadNote(note.id)" ng-repeat="note in notes() | limitTo: 10">
+      <div class="note-title">{{ note.title }}</div>
+      <div class="note-body">{{ note.body_text }}</div>
+    </li>
+  </ul>
 </nav>
